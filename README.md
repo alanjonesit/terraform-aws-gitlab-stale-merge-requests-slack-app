@@ -1,0 +1,2 @@
+# terraform-aws-gitlab-stale-merge-requests-slack-app
+Terraform module which creates AWS Lambda function which notifies a Slack workspace about GitLab merge requests that haven't been updated within a certain amount of days. Messages the merge request author individually and posts a summary to the fallback channel. Posts to the fallback channel when the author of the merge request cannot be found.

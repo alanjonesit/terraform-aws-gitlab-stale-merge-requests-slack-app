@@ -1,14 +1,13 @@
-name: Lint Code Base
+name: validate
 
 on: [push, pull_request]
 
 jobs:
   lint:
-    name: MegaLinter Terraform
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: MegaLinter Terraform
-        uses: oxsecurity/megalinter/flavors/terraform@v7
+      - uses: oxsecurity/megalinter/flavors/terraform@v7

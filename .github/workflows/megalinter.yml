@@ -1,6 +1,6 @@
 name: validate
-
 on: [push, pull_request]
+permissions: read
 
 jobs:
   lint:

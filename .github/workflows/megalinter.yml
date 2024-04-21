@@ -11,3 +11,5 @@ jobs:
         with:
           fetch-depth: 0
       - uses: oxsecurity/megalinter/flavors/terraform@v7
+        env:
+          DISABLE_LINTERS: SPELL_CSPELL

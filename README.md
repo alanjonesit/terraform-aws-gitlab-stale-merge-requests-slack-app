@@ -1,7 +1,5 @@
 # AWS Lambda stale GitLab merge requests Slack app module
 
-[![MegaLinter](https://github.com/alanjonesit/terraform-aws-gitlab-stale-merge-requests-slack-app/workflows/MegaLinter/badge.svg?branch=main)](https://github.com/alanjonesit/terraform-aws-gitlab-stale-merge-requests-slack-app/actions?query=workflow%3AMegaLinter+branch%3Amain)
-
 Terraform module which creates AWS Lambda function which notifies a Slack workspace about GitLab merge requests that haven't been updated within a certain amount of days. Messages the merge request author individually and posts a summary to the fallback channel. Posts to the fallback channel when the author of the merge request cannot be found.
 
 The Lambda function uses values from the Parameter Store for API tokens. The value of these tokens needs to be updated manually, as this module will create them with the value `placeholder`.
@@ -115,15 +113,14 @@ No modules.
 | <a name="input_cloudwatch_event_rule_description"></a> [cloudwatch\_event\_rule\_description](#input\_cloudwatch\_event\_rule\_description) | Description of CloudWatch event rule to use for Lambda Function. | `string` | `null` | no |
 | <a name="input_cloudwatch_event_rule_name"></a> [cloudwatch\_event\_rule\_name](#input\_cloudwatch\_event\_rule\_name) | Name of CloudWatch event rule to use for Lambda Function. | `string` | `null` | no |
 | <a name="input_cloudwatch_logs_kms_key_id"></a> [cloudwatch\_logs\_kms\_key\_id](#input\_cloudwatch\_logs\_kms\_key\_id) | The ARN of the KMS Key to use when encrypting log data. | `string` | `null` | no |
-| <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `30` | no |
+| <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `365` | no |
 | <a name="input_cloudwatch_logs_tags"></a> [cloudwatch\_logs\_tags](#input\_cloudwatch\_logs\_tags) | A map of tags to assign to the resource. | `map(string)` | `{}` | no |
-| <a name="input_compatible_architectures"></a> [compatible\_architectures](#input\_compatible\_architectures) | A list of Architectures Lambda layer is compatible with. Currently x86\_64 and arm64 can be specified. | `list(string)` | <pre>[<br>  "x86_64"<br>]</pre> | no |
-| <a name="input_description"></a> [description](#input\_description) | Description of the Lambda Function | `string` | `"Notifies a Slack workspace about GitLab merge requests that haven't been updated within a certain amount of days."` | no |
+| <a name="input_compatible_architectures"></a> [compatible\_architectures](#input\_compatible\_architectures) | A list of Architectures Lambda layer is compatible with. Currently x86\_64 and arm64 can be specified. | `list(string)` | `null` | no |
 | <a name="input_enable_scheduling"></a> [enable\_scheduling](#input\_enable\_scheduling) | Enable scheduling so that Lambda automatically triggers based on cron expression. | `bool` | `true` | no |
 | <a name="input_exclude_groups"></a> [exclude\_groups](#input\_exclude\_groups) | Define keywords to filter out GitLab Groups from the function. Example 'group1, group2'. | `string` | `""` | no |
 | <a name="input_fallback_channel_id"></a> [fallback\_channel\_id](#input\_fallback\_channel\_id) | ID of the fallback channel for notifications. Can use the format '#channel-name'. | `string` | n/a | yes |
+| <a name="input_function_description"></a> [function\_description](#input\_function\_description) | Description of the Lambda Function | `string` | `null` | no |
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | A unique name for the Lambda Function | `string` | `"gitlab-stale-merge-requests-slack-app"` | no |
-| <a name="input_function_tags"></a> [function\_tags](#input\_function\_tags) | A map of tags to assign only to the lambda function | `map(string)` | `{}` | no |
 | <a name="input_gitlab_base_url"></a> [gitlab\_base\_url](#input\_gitlab\_base\_url) | Base URL for the GitLab API including 'https://'. | `string` | n/a | yes |
 | <a name="input_internal_email_domains"></a> [internal\_email\_domains](#input\_internal\_email\_domains) | List of internal email domains for GitLab users. Used to message only internal users.  Example 'domain1.com, domain2.com'. | `string` | `null` | no |
 | <a name="input_lambda_schedule"></a> [lambda\_schedule](#input\_lambda\_schedule) | When to trigger Lambda function. Set value in cron format. | `string` | `null` | no |
@@ -139,7 +136,6 @@ No modules.
 | <a name="input_ssm_parameter_slack_token_description"></a> [ssm\_parameter\_slack\_token\_description](#input\_ssm\_parameter\_slack\_token\_description) | Description of SSM parameter for Slack token. | `string` | `null` | no |
 | <a name="input_ssm_parameter_slack_token_name"></a> [ssm\_parameter\_slack\_token\_name](#input\_ssm\_parameter\_slack\_token\_name) | Name of SSM parameter for Slack token. | `string` | `null` | no |
 | <a name="input_stale_days_threshold"></a> [stale\_days\_threshold](#input\_stale\_days\_threshold) | Threshold in days for considering a merge request as stale. | `number` | `7` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to all resources. | `map(string)` | `{}` | no |
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | The amount of time the Lambda Function has to run in seconds. | `number` | `120` | no |
 | <a name="input_tracing_mode"></a> [tracing\_mode](#input\_tracing\_mode) | Tracing mode of the Lambda Function. Valid value can be either PassThrough or Active. | `string` | `null` | no |
 

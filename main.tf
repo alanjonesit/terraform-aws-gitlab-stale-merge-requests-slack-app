@@ -1,5 +1,6 @@
 locals {
   layer_description                      = var.layer_description == null ? "Used by Lambda function '${var.function_name}'." : var.layer_description
+  function_description                   = var.function_description == null ? "Notifies a Slack workspace about GitLab merge requests that haven't been updated within ${var.stale_days_threshold} days." : var.function_description
   role_description                       = var.role_description == null ? "Used by Lambda function '${var.function_name}'." : var.role_description
   cloudwatch_event_rule_description      = var.cloudwatch_event_rule_description == null ? "Used by Lambda function '${var.function_name}'." : var.cloudwatch_event_rule_description
   ssm_parameter_slack_token_name         = var.ssm_parameter_slack_token_name == null ? "/${var.function_name}/slack-token" : var.ssm_parameter_slack_token_name
@@ -50,7 +51,7 @@ data "archive_file" "code" {
 resource "aws_lambda_function" "this" {
   filename         = data.archive_file.code.output_path
   function_name    = var.function_name
-  description      = var.description
+  description      = var.function_description
   role             = aws_iam_role.this.arn
   handler          = "lambda.check_and_notify_stale_merge_requests"
   runtime          = var.runtime
@@ -79,8 +80,6 @@ resource "aws_lambda_function" "this" {
       mode = var.tracing_mode
     }
   }
-
-  tags = merge(var.tags, var.function_tags)
 
   depends_on = [aws_cloudwatch_log_group.lambda]
 }

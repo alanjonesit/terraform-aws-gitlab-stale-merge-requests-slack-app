@@ -46,10 +46,10 @@ variable "runtime" {
   default     = "python3.12"
 }
 
-variable "description" {
+variable "function_description" {
   description = "Description of the Lambda Function"
   type        = string
-  default     = "Notifies a Slack workspace about GitLab merge requests that haven't been updated within a certain amount of days."
+  default     = null
 }
 
 variable "publish" {
@@ -76,18 +76,6 @@ variable "tracing_mode" {
   default     = null
 }
 
-variable "tags" {
-  description = "A map of tags to assign to all resources."
-  type        = map(string)
-  default     = {}
-}
-
-variable "function_tags" {
-  description = "A map of tags to assign only to the lambda function"
-  type        = map(string)
-  default     = {}
-}
-
 ########
 # Layer
 ########
@@ -107,7 +95,7 @@ variable "layer_description" {
 variable "compatible_architectures" {
   description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
   type        = list(string)
-  default     = ["x86_64"]
+  default     = null
 }
 
 #######################
@@ -145,7 +133,7 @@ variable "cloudwatch_event_rule_description" {
 variable "cloudwatch_logs_retention_in_days" {
   description = "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653."
   type        = number
-  default     = 30
+  default     = 365
 }
 
 variable "cloudwatch_logs_kms_key_id" {

@@ -141,7 +141,18 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_cloudwatch_event_rule_name"></a> [cloudwatch\_event\_rule\_name](#output\_cloudwatch\_event\_rule\_name) | The name of the CloudWatch Event Rule. Returns 'Scheduling not enabled' if scheduling is disabled. |
+| <a name="output_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#output\_cloudwatch\_log\_group\_name) | The name of the CloudWatch Log Group associated with the Lambda function. |
+| <a name="output_code_zip_path"></a> [code\_zip\_path](#output\_code\_zip\_path) | The path to the zipped code for the Lambda function. |
+| <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | The ARN of the IAM role used by the Lambda function. |
+| <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda function. |
+| <a name="output_lambda_function_name"></a> [lambda\_function\_name](#output\_lambda\_function\_name) | The name of the Lambda function. |
+| <a name="output_lambda_layer_version_arn"></a> [lambda\_layer\_version\_arn](#output\_lambda\_layer\_version\_arn) | The ARN of the Lambda layer version. |
+| <a name="output_layer_zip_path"></a> [layer\_zip\_path](#output\_layer\_zip\_path) | The path to the zipped Lambda layer package. |
+| <a name="output_ssm_parameter_gitlab_token_name"></a> [ssm\_parameter\_gitlab\_token\_name](#output\_ssm\_parameter\_gitlab\_token\_name) | The name of the SSM parameter that stores the GitLab token. |
+| <a name="output_ssm_parameter_slack_token_name"></a> [ssm\_parameter\_slack\_token\_name](#output\_ssm\_parameter\_slack\_token\_name) | The name of the SSM parameter that stores the Slack token. |
 <!-- END_TF_DOCS -->
 
 ## Authors

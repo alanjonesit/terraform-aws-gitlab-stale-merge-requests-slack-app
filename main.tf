@@ -51,7 +51,7 @@ data "archive_file" "code" {
 resource "aws_lambda_function" "this" {
   filename         = data.archive_file.code.output_path
   function_name    = var.function_name
-  description      = var.function_description
+  description      = local.function_description
   role             = aws_iam_role.this.arn
   handler          = "lambda.check_and_notify_stale_merge_requests"
   runtime          = var.runtime

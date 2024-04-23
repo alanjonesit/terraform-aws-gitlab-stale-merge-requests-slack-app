@@ -3,7 +3,7 @@ botocore==1.31.79
 certifi==2023.7.22
 charset-normalizer==3.3.2
 DateTime==5.2
-idna==3.4
+idna==3.7
 jmespath==1.0.1
 python-dateutil==2.8.2
 pytz==2023.3.post1

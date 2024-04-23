@@ -6,7 +6,7 @@ The Lambda function uses values from the Parameter Store for API tokens. The val
 
 ## Install
 
-You must have python3 and pip installed to generate `.zip` files for Lambda Function and layer.
+You must have [python3](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed to generate `.zip` files for Lambda Function and layer. Note: If you have Python version 3.4 or later, pip is included by default.
 
 ## Usage
 

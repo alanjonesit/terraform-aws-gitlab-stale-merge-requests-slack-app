@@ -14,7 +14,7 @@ You must have [python3](https://www.python.org/downloads/) and [pip](https://pip
 
 ```hcl
 module "gitlab-stale-merge-requests-slack-app" {
-  source = "github.com/alanjonesit/terraform-aws-gitlab-stale-merge-requests-slack-app"
+  source  = "alanjonesit/gitlab-stale-merge-requests-slack-app/aws"
 
   gitlab_base_url       = "https://gitlab.example.com"
   stale_days_threshold  = 7

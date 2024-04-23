@@ -5,6 +5,7 @@
 variable "gitlab_base_url" {
   description = "Base URL for the GitLab API including 'https://'."
   type        = string
+  default     = "https://gitlab.com"
 }
 
 variable "stale_days_threshold" {

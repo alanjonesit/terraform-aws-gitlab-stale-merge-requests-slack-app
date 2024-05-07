@@ -197,24 +197,47 @@ def get_gitlab_user_email(user_id):
 
 def send_slack_summary(stale_merge_requests, slack_client):
     """Send summary of stale merge requests to fallback Slack channel."""
-    summary = {}
     summary_message = f"""Total of *{len(stale_merge_requests)}* open merge requests not updated in the last {STALE_DAYS_THRESHOLD} days, in non-archived projects. \n
 _Note: If the numbers below do not match the merge requests in GitLab, you may not have permission to view them._\n\n"""
 
-    # Create assignee count
+    # Create a dictionary to store unique merge requests per assignee
+    merge_requests_by_assignee = {}
     for mr in stale_merge_requests:
-        assignee_id = mr.get("assignee", {}).get("id", None)
-        assignee_username = mr.get("assignee", {}).get("username", "Unassigned")
-        assignee_state = mr.get("assignee", {}).get("state", None)
+        assignee_id = mr.get("assignee", {}).get("id", "Unassigned")
+        if assignee_id not in merge_requests_by_assignee:
+            merge_requests_by_assignee[assignee_id] = set()
+        merge_requests_by_assignee[assignee_id].add(mr["id"])
 
-        if assignee_id in summary:
-            summary[assignee_id]["count"] += 1
+    summary = {}
+    for assignee_id, merge_request_ids in merge_requests_by_assignee.items():
+        if assignee_id == "Unassigned":
+            assignee_username = "Unassigned"
+            assignee_email = None
+            assignee_state = None
         else:
-            summary[assignee_id] = {
-                "count": 1,
-                "username": assignee_username,
-                "state": assignee_state,
-            }
+            assignee_info = next(
+                (
+                    mr
+                    for mr in stale_merge_requests
+                    if mr["assignee"]["id"] == assignee_id
+                ),
+                None,
+            )
+            if assignee_info:
+                assignee_username = assignee_info["assignee"]["username"]
+                assignee_email = get_gitlab_user_email(assignee_id)
+                assignee_state = assignee_info["assignee"].get("state", None)
+            else:
+                assignee_username = "Unknown"
+                assignee_email = None
+                assignee_state = None
+
+        summary[assignee_id] = {
+            "count": len(merge_request_ids),
+            "username": assignee_username,
+            "email": assignee_email,
+            "state": assignee_state,
+        }
 
     # Sort summary assignees by count, descending
     sorted_summary = sorted(
@@ -234,20 +257,19 @@ _Note: If the numbers below do not match the merge requests in GitLab, you may n
         assignee_merge_url = f"{GITLAB_BASE_URL}/dashboard/merge_requests?scope=all&state=opened&{assignee_param}"
 
         # Find Slack user ID to be able to mention them
-        assignee_email = get_gitlab_user_email(assignee_id)
-        slack_user_tag = assignee_email if assignee_email else data["username"]
+        slack_user_tag = data["email"] if data["email"] else data["username"]
 
-        if assignee_email:
+        if data["email"]:
             try:
                 if INTERNAL_EMAIL_DOMAINS and any(
-                    domain in assignee_email for domain in INTERNAL_EMAIL_DOMAINS
+                    domain in data["email"] for domain in INTERNAL_EMAIL_DOMAINS
                 ):
-                    slack_user = slack_client.users_lookupByEmail(email=assignee_email)
+                    slack_user = slack_client.users_lookupByEmail(email=data["email"])
                     user_id = slack_user["user"]["id"]
                     slack_user_tag = f"<@{user_id}>"
             except SlackApiError as e:
                 print(
-                    f"Error creating Slack user tag for {assignee_email}: {e.response['error']}"
+                    f"Error creating Slack user tag for {data['email']}: {e.response['error']}"
                 )
 
         if data["state"] == "blocked":
@@ -329,11 +351,11 @@ def send_slack_individual_mr(stale_merge_requests, slack_client):
         # Convert Slack message from list to string
         message = "\n".join(message_list)
 
-        # Gather all merge requests for recipient, rather than send one at a time
+        # Gather all merge requests for recipient, using a set to ensure uniqueness
         if user_id in messages_by_recipient:
-            messages_by_recipient[user_id].append(message)
+            messages_by_recipient[user_id].add(message)
         else:
-            messages_by_recipient[user_id] = [message]
+            messages_by_recipient[user_id] = {message}
 
     # Send Slack message
     for recipient, messages in messages_by_recipient.items():
@@ -347,7 +369,7 @@ def send_slack_individual_mr(stale_merge_requests, slack_client):
             intro = f"You have open merge requests that haven't been updated in the last {STALE_DAYS_THRESHOLD} days. Please review and take appropriate action."
             print(f"Sending Slack direct message to user {recipient}...")
 
-        message = intro + "".join(messages)
+        message = intro + "\n".join(messages)
 
         # Send Slack individual message
         try:

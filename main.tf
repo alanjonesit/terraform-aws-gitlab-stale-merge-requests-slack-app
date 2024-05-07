@@ -1,6 +1,5 @@
 locals {
   layer_description                      = var.layer_description == null ? "Used by Lambda function '${var.function_name}'." : var.layer_description
-  function_description                   = var.function_description == null ? "Notifies a Slack workspace about GitLab merge requests that haven't been updated within ${var.stale_days_threshold} days." : var.function_description
   role_description                       = var.role_description == null ? "Used by Lambda function '${var.function_name}'." : var.role_description
   cloudwatch_event_rule_description      = var.cloudwatch_event_rule_description == null ? "Used by Lambda function '${var.function_name}'." : var.cloudwatch_event_rule_description
   ssm_parameter_slack_token_name         = var.ssm_parameter_slack_token_name == null ? "/${var.function_name}/slack-token" : var.ssm_parameter_slack_token_name
@@ -11,16 +10,16 @@ locals {
 
 resource "null_resource" "this" {
   triggers = {
-    shell_hash = sha256(file("${path.module}/files/requirements.txt"))
-    runtime    = var.runtime
+    shell_hash      = sha256(file("${path.module}/files/requirements.txt"))
+    packages_exists = length(fileset("${path.module}/files/packages/python/lib/${var.runtime}/site-packages", "*")) > 0
   }
 
   provisioner "local-exec" {
     command     = <<EOF
-    rm -rf ${path.module}/files/packages/*
-    mkdir -p ${path.module}/files/packages/python/lib/${var.runtime}/site-packages
-    python3 -m pip install -r ${path.module}/files/requirements.txt -t ${path.module}/files/packages/python/lib/${var.runtime}/site-packages
-  EOF
+rm -rf ${path.module}/files/packages/*
+mkdir -p ${path.module}/files/packages/python/lib/${var.runtime}/site-packages
+python3 -m pip install -r ${path.module}/files/requirements.txt -t ${path.module}/files/packages/python/lib/${var.runtime}/site-packages
+EOF
     interpreter = ["/bin/bash", "-c"]
   }
 }
@@ -51,7 +50,7 @@ data "archive_file" "code" {
 resource "aws_lambda_function" "this" {
   filename         = data.archive_file.code.output_path
   function_name    = var.function_name
-  description      = local.function_description
+  description      = var.description
   role             = aws_iam_role.this.arn
   handler          = "lambda.check_and_notify_stale_merge_requests"
   runtime          = var.runtime
@@ -80,6 +79,8 @@ resource "aws_lambda_function" "this" {
       mode = var.tracing_mode
     }
   }
+
+  tags = merge(var.tags, var.function_tags)
 
   depends_on = [aws_cloudwatch_log_group.lambda]
 }
@@ -149,6 +150,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.function_name}"
   retention_in_days = var.cloudwatch_logs_retention_in_days
   kms_key_id        = var.cloudwatch_logs_kms_key_id
+
+  tags = merge(var.tags, var.cloudwatch_logs_tags)
 }
 
 resource "aws_ssm_parameter" "slack_token" {

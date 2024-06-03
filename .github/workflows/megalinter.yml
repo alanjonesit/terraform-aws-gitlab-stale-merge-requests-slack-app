@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: oxsecurity/megalinter/flavors/terraform@03986e6993ccf699a22451118520680b438e7d2a # v7.11.1
+      - uses: oxsecurity/megalinter/flavors/terraform@5199c6377b4cb7faff749a1971636f3343db9fe6 # v7.12.0
         env:
           DISABLE_LINTERS: SPELL_CSPELL,MARKDOWN_MARKDOWN_LINK_CHECK
